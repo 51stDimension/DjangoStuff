@@ -1,0 +1,65 @@
+1) pip install django-pwa
+2) path('',include('pwa.urls')), in main_project urls.py not basic_app/urls.py
+3) serviceworker.js inside static/js
+4) In settings.py PWA_SERVICE_WORKER_PATH = BASE_DIR/'basic_app/static/js/serviceworker.js' under TEMPLATE_DIR
+5) Also in settings.py anywhere:
+
+    PWA_APP_NAME = 'geeksforgeeks'
+    PWA_APP_DESCRIPTION = "GeeksForGeeks PWA"
+    PWA_APP_THEME_COLOR = '#000000'
+    PWA_APP_BACKGROUND_COLOR = '#ffffff'
+    PWA_APP_DISPLAY = 'standalone'
+    PWA_APP_SCOPE = '/'
+    PWA_APP_ORIENTATION = 'any'
+    PWA_APP_START_URL = '/'
+    PWA_APP_STATUS_BAR_COLOR = 'default'
+    PWA_APP_ICONS = [
+      {
+        'src': 'static/img/logo.png',
+        'sizes': '160x160'
+      }
+    ]
+    PWA_APP_ICONS_APPLE = [
+      {
+        'src': 'static/img/logo.png',
+        'sizes': '160x160'
+      }
+    ]
+    PWA_APP_SPLASH_SCREEN = [
+      {
+        'src': 'static/img/logo.png',
+        'media': '(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)'
+      }
+    ]
+    PWA_APP_DIR = 'ltr'
+    PWA_APP_LANG = 'en-US'
+
+6) Serviceworker.js
+  var staticCacheName = 'djangopwa-v1';
+
+  self.addEventListener('install', function(event) {
+  event.waitUntil(
+    caches.open(staticCacheName).then(function(cache) {
+    return cache.addAll([
+      '/',
+      'basic_app/signup/',
+    ]);
+    })
+  );
+  });
+
+  self.addEventListener('fetch', function(event) {
+
+    event.respondWith(
+    caches.match(event.request).then(function(response) {
+      return response || fetch(event.request);
+    })
+    );
+  });
+
+7) In base.html
+  {% load static %}
+  {% load pwa %}
+  {% progressive_web_app_meta %}
+
+8) In INSTALLED_APPS add 'pwa',
